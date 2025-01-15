@@ -22,7 +22,7 @@ async function processPDF() {
         console.log(`Page ${i} Content:`, pageText);
 
         // Update matching logic if necessary
-        const extractedQuestions = pageText.match(/^\d+[.)]? .+$/gm);
+        const extractedQuestions = pageText.match(/^\d+[.)]?\s.+$/gm);
         if (extractedQuestions) {
             questions = questions.concat(extractedQuestions);
         }
