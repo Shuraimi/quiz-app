@@ -15,9 +15,9 @@ async function processPDF() {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
 
-        const pageText = textContent.items.map(item => item.str).join(' ');
+        const pageText = textContent.items.map(item => item.str).join('\n');
 
-        // Extract questions in the format 11.1.1 with answers
+        // Extract questions with numbering like 11.1.1 and answers
         const extractedLines = pageText.split('\n');
         extractedLines.forEach(line => {
             const match = line.match(/^(\d+\.\d+\.\d+)\s+(.+?)(Answer:\s*[A-D])?/);
@@ -39,28 +39,33 @@ async function processPDF() {
     }
 }
 
-
 function generateQuiz(questions) {
     const container = document.getElementById('quiz-container');
     container.innerHTML = '';
-    questions.forEach((question, index) => {
+
+    questions.forEach((q, index) => {
         const div = document.createElement('div');
         div.className = 'quiz-question';
         div.innerHTML = `
-            <p>${index + 1}. ${question}</p>
-            <label><input type="radio" name="q${index}" value="A"> A</label>
-            <label><input type="radio" name="q${index}" value="B"> B</label>
-            <label><input type="radio" name="q${index}" value="C"> C</label>
-            <label><input type="radio" name="q${index}" value="D"> D</label>
+            <p><strong>${q.id}:</strong> ${q.question}</p>
+            <label>
+                <input type="radio" name="q${index}" value="A" onclick="validateAnswer(${index}, 'A', '${q.correctAnswer}')">
+                A
+            </label>
+            <label>
+                <input type="radio" name="q${index}" value="B" onclick="validateAnswer(${index}, 'B', '${q.correctAnswer}')">
+                B
+            </label>
+            <label>
+                <input type="radio" name="q${index}" value="C" onclick="validateAnswer(${index}, 'C', '${q.correctAnswer}')">
+                C
+            </label>
+            <label>
+                <input type="radio" name="q${index}" value="D" onclick="validateAnswer(${index}, 'D', '${q.correctAnswer}')">
+                D
+            </label>
+            <p id="result-${index}" class="result"></p>
         `;
         container.appendChild(div);
     });
-
-    const submitBtn = document.createElement('button');
-    submitBtn.className = 'btn';
-    submitBtn.textContent = 'Submit';
-    submitBtn.onclick = () => {
-        alert('Quiz submitted! Scoring will be implemented later.');
-    };
-    container.appendChild(submitBtn);
 }
