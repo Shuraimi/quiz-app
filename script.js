@@ -15,23 +15,27 @@ async function processPDF() {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
 
-        // Extract text as a single string
         const pageText = textContent.items.map(item => item.str).join(' ');
 
-        // Log extracted text for debugging
-        console.log(`Page ${i} Content:`, pageText);
-
-        // Update matching logic if necessary
-        const extractedQuestions = pageText.match(/^\d+[.)]?\s.+$/gm);
-        if (extractedQuestions) {
-            questions = questions.concat(extractedQuestions);
-        }
+        // Extract questions in the format 11.1.1 with answers
+        const extractedLines = pageText.split('\n');
+        extractedLines.forEach(line => {
+            const match = line.match(/^(\d+\.\d+\.\d+)\s+(.+?)(Answer:\s*[A-D])?/);
+            if (match) {
+                const [_, id, question, answer] = match;
+                questions.push({
+                    id,
+                    question: question.trim(),
+                    correctAnswer: answer ? answer.split(':')[1].trim() : null
+                });
+            }
+        });
     }
 
     if (questions.length > 0) {
         generateQuiz(questions);
     } else {
-        alert('No questions found in the PDF. Check console logs to debug.');
+        alert('No questions found in the PDF. Check formatting or refine extraction logic.');
     }
 }
 
