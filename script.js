@@ -6,7 +6,6 @@ async function processPDF() {
         return;
     }
 
-    // Load PDF.js and read the file
     const pdfjsLib = window['pdfjs-dist/build/pdf'];
     const loadingTask = pdfjsLib.getDocument(URL.createObjectURL(file));
     const pdf = await loadingTask.promise;
@@ -16,9 +15,14 @@ async function processPDF() {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
 
+        // Extract text as a single string
         const pageText = textContent.items.map(item => item.str).join(' ');
-        // Extract lines starting with numbers (basic heuristic for questions)
-        const extractedQuestions = pageText.match(/^\d+\. .+$/gm);
+
+        // Log extracted text for debugging
+        console.log(`Page ${i} Content:`, pageText);
+
+        // Update matching logic if necessary
+        const extractedQuestions = pageText.match(/^\d+[.)]? .+$/gm);
         if (extractedQuestions) {
             questions = questions.concat(extractedQuestions);
         }
@@ -27,9 +31,10 @@ async function processPDF() {
     if (questions.length > 0) {
         generateQuiz(questions);
     } else {
-        alert('No questions found in the PDF.');
+        alert('No questions found in the PDF. Check console logs to debug.');
     }
 }
+
 
 function generateQuiz(questions) {
     const container = document.getElementById('quiz-container');
