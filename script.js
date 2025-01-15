@@ -69,3 +69,12 @@ function generateQuiz(questions) {
         container.appendChild(div);
     });
 }
+function validateAnswer(questionIndex, selectedOption, correctAnswer) {
+    const resultElement = document.getElementById(`result-${questionIndex}`);
+    if (selectedOption === correctAnswer) {
+        resultElement.innerHTML = '<span style="color: green; font-weight: bold;">Correct!</span>';
+    } else {
+        resultElement.innerHTML = `<span style="color: red; font-weight: bold;">Wrong! The correct answer is ${correctAnswer}.</span>`;
+    }
+}
+
